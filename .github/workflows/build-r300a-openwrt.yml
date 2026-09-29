@@ -43,6 +43,11 @@ jobs:
 
       - name: Update & install feeds
         run: |
+          # 关键修复：仓库是 22.03 基线，但 luci feed 原本指向 master，
+          # 其 lucihttp-2023-03-15 的 ucode 绑定用新 API（uc_resource_new），
+          # 与树内旧 ucode（uc_ressource_new）不兼容 → 编译必挂。
+          # 锁定 luci feed 到 openwrt-22.03 分支，与基线完全自洽。
+          sed -i 's#^src-git luci .*#src-git luci https://git.openwrt.org/project/luci.git;openwrt-22.03#' feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
